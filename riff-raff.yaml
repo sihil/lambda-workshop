@@ -1,0 +1,31 @@
+stacks: [playground]
+regions: [eu-west-1]
+templates:
+  sihil-lambda-workshop:
+    type: aws-lambda
+    app: sihil-lambda-workshop
+    contentDirectory: sihil-lambda-workshop
+    parameters:
+      bucket: gu-jr-microservice-workshop-dist
+      functionNames: [sihil-lambda-workshop-]
+      fileName: sihil-lambda-workshop.zip
+      prefixStack: false
+
+deployments:
+  sihil-lambda-upload:
+    template: sihil-lambda-workshop
+    actions: [uploadLambda]
+
+  sihil-lambda-workshop-cfn:
+    type: cloud-formation
+    app: sihil-lambda-workshop
+    parameters:
+      prependStackToCloudFormationStackName: false
+      cloudFormationStackName: sihil-lambda-workshop
+      templatePath: cfn.yaml
+    dependencies: [sihil-lambda-upload]
+
+  sihil-lambda-lambda-update:
+    template: sihil-lambda-workshop
+    actions: [updateLambda]
+    dependencies: [sihil-lambda-workshop-cfn]
